@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+    <title>PDF 분석 서비스</title>
+</head>
+<body>
+    <h1>PDF 분석 서비스</h1>
+    <form id="upload-form">
+        <input type="file" id="pdf-file" name="file" accept="application/pdf" required><br>
+        <input type="text" id="keywords" name="keywords" placeholder="키워드 입력 (쉼표로 구분)" required><br>
+        <button type="submit">분석 시작</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('pdf-file');
+            const keywordsInput = document.getElementById('keywords');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            keywordsInput.value.split(',').forEach(keyword => {
+                formData.append('keywords', keyword.trim());
+            });
+
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+</html>
